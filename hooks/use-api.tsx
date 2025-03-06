@@ -65,7 +65,17 @@ const useApi = <T,>({
     }
   };
   //hook used for mutations
-  const mutation = useMutation({
+  const {
+    mutate,
+    isError,
+    isIdle,
+    error,
+    isPending,
+    isSuccess,
+    isPaused,
+    failureCount,
+    failureReason,
+  } = useMutation({
     mutationFn: postRequest,
     mutationKey: [key], //in our case post request
   });
@@ -77,7 +87,7 @@ const useApi = <T,>({
     onSuccess = () => {},
     onUploadProgress,
   }: MutationFunction<T, R>) {
-    mutation.mutate(
+    mutate(
       {
         path,
         data,
@@ -96,7 +106,17 @@ const useApi = <T,>({
       }
     );
   }
-  return { ...mutation, onRequest };
+  return {
+    onRequest,
+    isError,
+    isIdle,
+    error,
+    isPending,
+    isSuccess,
+    isPaused,
+    failureCount,
+    failureReason,
+  };
 };
 
 export default useApi;

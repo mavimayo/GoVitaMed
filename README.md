@@ -101,3 +101,141 @@ export default function Home() {
 )}
 
 ```
+
+## POST PATCH DELETE PUT METHODS
+We have a hook named useApi. You can use it to make post patch delete put methods.
+This hook show a toast message when the request is successful or not.
+This hook accepts a object with the following properties
+  - key?: string | T;
+  - showSuccessToast?: boolean;
+  - showErrorToast?: boolean;
+  - method?: "post" | "put" | "delete" | "patch";
+Key is optional. It is used by react query to identify the query.
+You can hide the toast message by passing false to the showSuccessToast and showErrorToast props.
+
+By default the method is post. You can change it by passing the method prop.
+
+This hooks returns a object with the following properties
+  - onRequest: This function is used to make the request.
+  - isError: This is a boolean value which is true if the request is failed.
+  - isIdle: This is a boolean value which is true if the request is idle.
+  - error: This is the error object if the request is failed.
+  - isPending: This is a boolean value which is true if the request is pending.
+  - isSuccess: This is a boolean value which is true if the request is successful.
+  - isPaused: This is a boolean value which is true if the request is paused.
+  - failureCount: This is the number of times the request has failed.
+  - failureReason: This is the reason for the failure of the request.
+
+  The onRequest function accepts an object with the following properties
+    - data: The data to be sent in the request.
+    - path: The path of the request.
+    - onUploadProgress: The onUploadProgress event handler.
+    - onError: The onError event handler.
+    - onSuccess: The onSuccess event handler.
+onRequest also accepts a generic type T. This type will be type of the data which is coming from the onSuccess function.
+Example:
+```tsx
+import { useApi } from "@/hooks/use-api";
+export function Home(){
+    /// This hooks accepts a object with the following properties
+      //key?: string | T;
+  //showSuccessToast?: boolean;
+  //showErrorToast?: boolean;
+  //method?: "post" | "put" | "delete" | "patch";
+    const {onRequest} = useApi({})
+    function handleSubmit(){
+        onRequest({
+            path:"/some-path",
+            data:{},
+            onSuccess:(data)=>{
+                //update some data here
+            },
+            onError:(err)=>{
+                // in case any error occurred during api call
+            }
+        })
+    }
+    return (
+        <button onClick={handleSubmit}>Submit</button>
+    )
+}
+```
+
+
+
+## Forms and validation
+We will be using [zod](https://github.com/colinhacks/zod) and (react-hook-form)[https://react-hook-form.com/] for form validation.It will be used with shadcn form component. You can visit the [shadcn form documentation](https://ui.shadcn.com/docs/components/form) for more information.
+Every form will follow the same structure.
+```tsx
+"use client"
+
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+
+import { toast } from "@/components/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+
+const FormSchema = z.object({
+  username: z.string().min(2, {
+    message: "Username must be at least 2 characters.",
+  }),
+})
+
+export function InputForm() {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      username: "",
+    },
+  })
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    toast({
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
+    })
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-2/3 space-y-6">
+        <FormField
+          control={form.control}
+          name="username"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input placeholder="shadcn" {...field} />
+              </FormControl>
+              <FormDescription>
+                This is your public display name.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Submit</Button>
+      </form>
+    </Form>
+  )
+}
+
+```
+## Defining Zod Schema
+Create schema inside of the **/lib/schema** folder.You can create multiple files according to the project need.
