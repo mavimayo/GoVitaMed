@@ -159,7 +159,7 @@ function QueryStatus<T>(props: QueryStatusProps<T>): JSX.Element {
 
   if (query.isError) {
     return typeof onError === "function"
-      ? onError(query.error, query.refetch, query.isLoading)
+      ? onError(query.failureReason, query.refetch, query.isLoading)
       : onError;
   }
 
