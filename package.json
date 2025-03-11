@@ -56,6 +56,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/eslint-plugin-next": "^15.2.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -63,6 +64,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.2.0-canary.66",
     "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "tailwindcss": "^4",
     "typescript": "^5"
