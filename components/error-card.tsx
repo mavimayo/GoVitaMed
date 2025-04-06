@@ -20,7 +20,6 @@ export default function ErrorCard({
   isLoading?: boolean;
   onRetry?: () => void;
 }) {
-  console.log("errors ==>", error);
   async function onLogout() {
     // Add Logout logic here
   }
@@ -29,7 +28,8 @@ export default function ErrorCard({
     if (axios.isAxiosError(err)) {
       return err.response?.status === 401;
     }
-    return false;
+
+return false;
   }, []);
 
   // Check if it's a network error (no response)
@@ -38,7 +38,8 @@ export default function ErrorCard({
       // If error.response is undefined AND error.code is 'ERR_NETWORK', it's likely no network
       return !err.response && err.code === "ERR_NETWORK";
     }
-    return false;
+
+return false;
   }, []);
 
   // Get a display-friendly error message
@@ -49,6 +50,7 @@ export default function ErrorCard({
         return err.response.data.message;
       }
       // Otherwise a generic server error
+
       return "An error occurred while communicating with the server.";
     }
     // If it’s a plain JS error
@@ -56,6 +58,7 @@ export default function ErrorCard({
       return err.message;
     }
     // Fallback
+
     return "An unexpected error occurred.";
   }, []);
 
@@ -65,21 +68,21 @@ export default function ErrorCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center text-destructive">
-          <AlertCircle className="mr-2 h-5 w-5" />
+        <CardTitle className={"flex items-center text-destructive"}>
+          <AlertCircle className={"mr-2 h-5 w-5"} />
           Error
         </CardTitle>
         <CardDescription>{message}</CardDescription>
       </CardHeader>
 
       {/* Show different buttons depending on the error */}
-      <CardFooter className="flex items-center justify-center gap-x-3">
+      <CardFooter className={"flex items-center justify-center gap-x-3"}>
         {isUnauthorized(error) ? (
           // If 401, show logout button
           <Button
             onClick={onLogout}
-            variant="outline"
-            size="lg"
+            variant={"outline"}
+            size={"lg"}
             disabled={isLoading}
           >
             Logout
@@ -90,8 +93,8 @@ export default function ErrorCard({
             {onRetry && (
               <Button
                 onClick={onRetry}
-                variant="outline"
-                size="lg"
+                variant={"outline"}
+                size={"lg"}
                 disabled={isLoading}
               >
                 <RefreshCcw
@@ -109,8 +112,8 @@ export default function ErrorCard({
             {onRetry && (
               <Button
                 onClick={onRetry}
-                variant="outline"
-                size="lg"
+                variant={"outline"}
+                size={"lg"}
                 disabled={isLoading}
               >
                 <RefreshCcw

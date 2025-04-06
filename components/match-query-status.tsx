@@ -139,10 +139,11 @@ function QueryStatus<T>(props: QueryStatusProps<T>): JSX.Element {
   if (hasOnWithLoadingState(props)) {
     if (query.isError && props.onError) {
       return typeof props.onError === "function"
-        ? props.onError(query.error, query.refetch, query.isLoading)
+        ? props.onError(query.failureReason, query.refetch, query.isLoading)
         : props.onError;
     }
-    return props.onWithLoadingState(query.data as T, query.isLoading);
+    
+return props.onWithLoadingState(query.data as T, query.isLoading);
   }
 
   const {
@@ -155,7 +156,7 @@ function QueryStatus<T>(props: QueryStatusProps<T>): JSX.Element {
   } = props;
 
   if (query.isLoading)
-    return typeof onLoading === "function" ? onLoading() : onLoading;
+    {return typeof onLoading === "function" ? onLoading() : onLoading;}
 
   if (query.isError) {
     return typeof onError === "function"
