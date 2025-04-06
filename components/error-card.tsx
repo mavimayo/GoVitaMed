@@ -1,3 +1,14 @@
+/**
+ * ErrorCard component displays error messages with appropriate actions based on the error type.
+ * Handles different error scenarios including unauthorized access, network errors, and general errors.
+ *
+ * @component
+ * @param {Object} props - Component props
+ * @param {unknown} props.error - The error object to be handled
+ * @param {boolean} [props.isLoading] - Optional flag indicating if a retry action is in progress
+ * @param {() => void} [props.onRetry] - Optional callback function to retry the failed action
+ * @returns {JSX.Element} A card component displaying the error message and appropriate action buttons
+ */
 import React, { useState, useCallback } from "react";
 import {
   Card,
@@ -22,8 +33,13 @@ export default function ErrorCard({
 }) {
   async function onLogout() {
     // Add Logout logic here
-  }
-  // Check if unauthorized
+  };
+
+  /**
+   * Checks if the error is an unauthorized (401) error
+   * @param {unknown} err - The error to check
+   * @returns {boolean} True if the error is an unauthorized error
+   */
   const isUnauthorized = useCallback((err: unknown): boolean => {
     if (axios.isAxiosError(err)) {
       return err.response?.status === 401;
@@ -32,20 +48,26 @@ export default function ErrorCard({
 return false;
   }, []);
 
-  // Check if it's a network error (no response)
+  /**
+   * Checks if the error is a network connectivity error
+   * @param {unknown} err - The error to check
+   * @returns {boolean} True if the error is a network error
+   */
   const isNetworkError = useCallback((err: unknown): boolean => {
     if (axios.isAxiosError(err)) {
-      // If error.response is undefined AND error.code is 'ERR_NETWORK', it's likely no network
       return !err.response && err.code === "ERR_NETWORK";
     }
 
 return false;
   }, []);
 
-  // Get a display-friendly error message
+  /**
+   * Extracts a user-friendly error message from the error object
+   * @param {unknown} err - The error to process
+   * @returns {string} A user-friendly error message
+   */
   const getErrorMessage = useCallback((err: unknown): string => {
     if (axios.isAxiosError(err)) {
-      // If the server responded with something, show it
       if (err.response?.data?.message) {
         return err.response.data.message;
       }
@@ -53,7 +75,6 @@ return false;
 
       return "An error occurred while communicating with the server.";
     }
-    // If it’s a plain JS error
     if (err instanceof Error) {
       return err.message;
     }
@@ -62,7 +83,6 @@ return false;
     return "An unexpected error occurred.";
   }, []);
 
-  // Set initial error message
   const [message] = useState<string>(getErrorMessage(error));
 
   return (
@@ -78,7 +98,6 @@ return false;
       {/* Show different buttons depending on the error */}
       <CardFooter className={"flex items-center justify-center gap-x-3"}>
         {isUnauthorized(error) ? (
-          // If 401, show logout button
           <Button
             onClick={onLogout}
             variant={"outline"}
@@ -88,7 +107,6 @@ return false;
             Logout
           </Button>
         ) : isNetworkError(error) ? (
-          // If network error, label it differently
           <>
             {onRetry && (
               <Button
@@ -107,7 +125,6 @@ return false;
             )}
           </>
         ) : (
-          // If not 401 and not network error, show default “Try Again” (if provided)
           <>
             {onRetry && (
               <Button
