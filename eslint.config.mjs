@@ -1,81 +1,52 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
+import antfu from "@antfu/eslint-config";
+import nextPlugin from "@next/eslint-plugin-next";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import tailwind from "eslint-plugin-tailwindcss";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+export default antfu(
+  {
+    react: true,
+    typescript: true,
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+    lessOpinionated: true,
+    isInEditor: false,
 
-const eslintConfig = [
-  ...compat.config({
-    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
-    plugins: ["unused-imports"], // ✅ Correct way to reference the plugin
-    rules: {
-      // Code Style
-      semi: ["error", "always"],
-      quotes: ["error", "double", { avoidEscape: true }],
-      "prefer-arrow-callback": ["error"],
-      "prefer-template": ["error"],
-      "no-console": ["warn", { allow: ["warn", "error"] }],
-      "no-debugger": "error",
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
-      "unused-imports/no-unused-imports": "error", // ✅ Correct rule usage
-      "unused-imports/no-unused-vars": [
-        "warn",
-        {
-          vars: "all",
-          varsIgnorePattern: "^_",
-          args: "after-used",
-          argsIgnorePattern: "^_",
-        },
-      ],
-      "no-var": "error",
-      "prefer-const": "error",
-      "object-shorthand": "error",
-      "no-multiple-empty-lines": ["error", { max: 1 }],
-      "newline-before-return": "error",
-
-      // Next.js Specific
-      "@next/next/no-img-element": "error",
-      "@next/next/no-html-link-for-pages": "error",
-      "@next/next/no-sync-scripts": "error",
-      "@next/next/google-font-display": "warn",
-
-      // React & JSX
-      "react/jsx-boolean-value": ["error", "never"],
-      "react/jsx-curly-brace-presence": [
-        "error",
-        { props: "always", children: "never" },
-      ],
-      "react/no-array-index-key": "warn",
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
-
-      // TypeScript
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        { argsIgnorePattern: "^_" },
-      ],
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/no-explicit-any": "warn",
-      "@typescript-eslint/no-non-null-assertion": "warn",
-
-      // Accessibility
-      "jsx-a11y/alt-text": "error",
-      "jsx-a11y/anchor-is-valid": "warn",
-      "jsx-a11y/aria-role": ["error", { ignoreNonDOM: true }],
-
-      // Best Practices
-      "no-shadow": "warn",
-      eqeqeq: ["error", "always"],
-      "consistent-return": "warn",
-      curly: ["error", "multi-line"],
-      "default-case": "warn",
+    stylistic: {
+      semi: true,
     },
-  }),
-];
 
-export default eslintConfig;
+    formatters: {
+      css: true,
+    },
+
+    ignores: ["migrations/**/*", "next-env.d.ts", "node_modules/**/*"],
+  },
+  ...tailwind.configs["flat/recommended"],
+  jsxA11y.flatConfigs.recommended,
+  {
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+      "no-console": "warn",
+    },
+
+  },
+  {
+    rules: {
+      "antfu/no-top-level-await": "off", // Allow top-level await
+      "style/brace-style": ["error", "1tbs"], // Use the default brace style
+      "ts/consistent-type-definitions": ["error", "type"], // Use `type` instead of `interface`
+      "react/prefer-destructuring-assignment": "off", // Vscode doesn't support automatically destructuring, it's a pain to add a new variable
+      "node/prefer-global/process": "off", // Allow using `process.env`
+      "test/padding-around-all": "error", // Add padding in test files
+      "test/prefer-lowercase-title": "off", // Allow using uppercase titles in test titles
+      "react-hooks-extra/no-unnecessary-use-prefix": "off",
+      "style/multiline-ternary": "off",
+      "ts/no-use-before-define": "off",
+
+    },
+  },
+);
