@@ -61,27 +61,182 @@ We use a utility-driven approach to define queries and strongly type them:
 *   Define queries using `defineQuery`
 *   Use `createTypedFetchHook` to fetch data
 *   Use `createTypedInvalidationHook` to invalidate queries
+# Defining Queries with `defineQuery`
 
+The `defineQuery` function provides a type-safe way to define API endpoints in your Next.js application. This utility ensures proper typing from definition to component usage.
+
+## Syntax
+
+```tsx
+defineQuery<TData, TParams, TSearchParams>(queryDefinition)
 ```
 
-// query-def.ts
-export const QUERY_KEYS = {
-  getData: defineQuery<[], { id: string }>({
-    queryKey: ["get", "data"],
-    path: "/api/path"
-  }),
-};
+## Type Parameters
 
+- **`TData`**: The expected response data type from the API
+- **`TParams`**: Parameters required for the endpoint (path/URL parameters)
+- **`TSearchParams`**: URL search parameters (query string parameters)
+
+## Query Definition Properties
+
+| Property | Type | Required | Description |
+|----------|------|----------|-------------|
+| `queryKey` | `readonly unknown[]` or `(params: TParams, searchParams?: TSearchParams) => readonly unknown[]` | Yes | The cache key for TanStack Query |
+| `path` | `string` or `(params: TParams, searchParams?: TSearchParams) => string` | Yes | API endpoint path |
+| `requiresParams` | `boolean` | No | Whether parameters are required |
+| `searchParams` | `TSearchParams` or `(params: TParams) => TSearchParams` | No | Default search parameters |
+| `_data` | `TData` | No | Type placeholder for TypeScript inference |
+| `_params` | `TParams` | No | Type placeholder for parameters |
+| `_searchParams` | `TSearchParams` | No | Type placeholder for search params |
+
+## Path Structure Options
+
+### Static Path
+Simple path string: `/api/posts`
+
+### Path with Parameter Placeholders
+Uses colon syntax: `/api/posts/:id`
+
+### Dynamic Path Function
+Function that returns path: `(params) => `/api/posts/${params.id}`
+
+## Query Key Best Practices
+
+- Simple queries: `["entity-name"]`
+- With ID: `["entity-name", "detail", id]`
+- Relations: `["entity-name", id, "related-entity"]`
+- With filters: `["entity-name", "list", JSON.stringify(filters)]`
+
+## Examples
+
+### Basic Static Query
+
+```tsx
+const postList = defineQuery<Post[]>({
+  queryKey: ["posts"],
+  path: "/api/posts"
+});
 ```
 
+### Query with Required Parameters
+
+```tsx
+const postDetail = defineQuery<Post, { id: string }>({
+  queryKey: ["post", "detail"],
+  path: "/api/posts/:id",
+  requiresParams: true,
+  _data: {} as Post
+});
 ```
 
-// in your component
-import { useTypedFetch } from "@/lib/query";
+### Query with Dynamic Path and Key
 
-const { data } = useTypedFetch("getData");
-
+```tsx
+const userPosts = defineQuery<Post[], { userId: string }>({
+  queryKey: (params) => ["users", params.userId, "posts"],
+  path: (params) => `/api/users/${params.userId}/posts`,
+  requiresParams: true
+});
 ```
+
+### Query with Search Parameters
+
+```tsx
+interface PostSearchParams {
+  category?: string;
+  sortBy?: 'date' | 'title';
+  page?: number;
+}
+
+const filteredPosts = defineQuery<Post[], undefined, PostSearchParams>({
+  queryKey: ["posts", "filtered"],
+  path: "/api/posts",
+  searchParams: {
+    sortBy: 'date',
+    page: 1
+  }
+});
+```
+
+### Advanced Query with All Features
+
+```tsx
+interface ProductsResponse {
+  products: Product[];
+  total: number;
+  pages: number;
+}
+
+interface ProductFilters {
+  category: string;
+}
+
+interface ProductsSearchParams {
+  page?: number;
+  limit?: number;
+  sort?: 'price_asc' | 'price_desc' | 'newest';
+  inStock?: boolean;
+}
+
+const filteredProducts = defineQuery<
+  ProductsResponse,
+  ProductFilters,
+  ProductsSearchParams
+>({
+  queryKey: (params, searchParams) => [
+    "products",
+    params.category,
+    searchParams?.sort,
+    searchParams?.inStock ? "in-stock" : "all"
+  ],
+  path: (params) => `/api/products/${params.category}`,
+  requiresParams: true,
+  searchParams: (params) => ({
+    page: 1,
+    limit: 20,
+    sort: 'newest'
+  })
+});
+```
+
+## Usage with `useTypedFetch`
+
+After defining your queries, use them with `useTypedFetch`:
+
+```tsx
+function ProductList() {
+  // Static query - no params needed
+  const { data: allProducts } = useTypedFetch("allProducts");
+
+  // Query with required params
+  const { data: categoryProducts } = useTypedFetch("categoryProducts", {
+    params: { category: "electronics" }
+  });
+
+  // Query with params and search params
+  const { data: filteredProducts } = useTypedFetch("filteredProducts", {
+    params: { category: "electronics" },
+    searchParams: {
+      page: 2,
+      limit: 10,
+      sort: "price_asc",
+      inStock: true
+    },
+    options: {
+      staleTime: 60000 // 1 minute
+    }
+  });
+}
+```
+
+## Benefits
+
+- **Type Safety**: Full TypeScript inference from definition to component
+- **Centralized API Layer**: All endpoints defined in one location
+- **Self-Documenting**: Clear structure shows required parameters
+- **Cache Management**: Consistent cache keys for effective caching
+- **IDE Support**: Autocomplete for parameters and options
+- **Scalability**: Easy to extend as your API grows
 
 ## Mutation (POST, PUT, DELETE, PATCH)
 
