@@ -611,7 +611,7 @@ export default function DatePickerTestPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              
+
               {/* Future Dates Only */}
               <div className="space-y-4">
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -629,7 +629,7 @@ export default function DatePickerTestPage() {
                   <div className="mt-3 p-3 bg-white rounded border">
                     <p className="text-sm font-mono mb-2">Code:</p>
                     <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-{`<DatePicker
+                      {`<DatePicker
   allowedDateRange="future"
   singleValue={date}
   onSingleValueChange={setDate}
@@ -656,7 +656,7 @@ export default function DatePickerTestPage() {
                     <Label>Birth Date:</Label>
                     <DatePicker
                       singleValue={basicDate[0] || null}
-                      onSingleValueChange={(date) => setBasicDate(date ? [date] : [])}
+                      onSingleValueChange={date => setBasicDate(date ? [date] : [])}
                       allowedDateRange="past"
                       placeholder="MM/DD/YYYY"
                     />
@@ -665,7 +665,7 @@ export default function DatePickerTestPage() {
                   <div className="mt-3 p-3 bg-white rounded border">
                     <p className="text-sm font-mono mb-2">Code:</p>
                     <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-{`<DatePicker
+                      {`<DatePicker
   allowedDateRange="past"
   singleValue={date}
   onSingleValueChange={setDate}
@@ -701,7 +701,7 @@ export default function DatePickerTestPage() {
                   <div className="mt-3 p-3 bg-white rounded border">
                     <p className="text-sm font-mono mb-2">Code:</p>
                     <pre className="text-xs text-gray-600 whitespace-pre-wrap">
-{`<DatePicker
+                      {`<DatePicker
   allowedDateRange="all"
   value={dates}
   onValueChange={setDates}
@@ -767,9 +767,24 @@ export default function DatePickerTestPage() {
                 <div>
                   <h6 className="font-medium text-blue-800 mb-2">allowedDateRange Prop:</h6>
                   <ul className="text-xs space-y-1 text-blue-700">
-                    <li>• <code>"future"</code> - Only tomorrow and beyond</li>
-                    <li>• <code>"past"</code> - Only today and before</li>
-                    <li>• <code>"all"</code> - No restrictions (default)</li>
+                    <li>
+                      •
+                      <code>"future"</code>
+                      {' '}
+                      - Only tomorrow and beyond
+                    </li>
+                    <li>
+                      •
+                      <code>"past"</code>
+                      {' '}
+                      - Only today and before
+                    </li>
+                    <li>
+                      •
+                      <code>"all"</code>
+                      {' '}
+                      - No restrictions (default)
+                    </li>
                   </ul>
                 </div>
                 <div>

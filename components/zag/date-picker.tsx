@@ -51,15 +51,15 @@ export default function DatePicker({
 }: DatePickerProps) {
   // State for input validation
   const [inputError, setInputError] = useState<string>('');
-  
+
   // Handle date range type for automatic min/max setting
   const today = new Date();
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
-  
+
   let computedMin = min;
   let computedMax = max;
-  
+
   if (allowedDateRange === 'future') {
     computedMin = min || tomorrow;
   } else if (allowedDateRange === 'past') {
