@@ -1,6 +1,6 @@
 import type { UseQueryOptions } from '@tanstack/react-query';
-import { useFetch } from '@/hooks/use-fetch';
 import { useQueryClient } from '@tanstack/react-query';
+import { useFetch } from '@/hooks/use-fetch';
 
 // Base type for search parameters
 export type SearchParams = Record<string, string | number | boolean | undefined | null>;
@@ -9,7 +9,7 @@ export type SearchParams = Record<string, string | number | boolean | undefined 
 export type StaticQuery<
   TData = unknown,
   TParams = undefined,
-  TSearchParams = SearchParams
+  TSearchParams = SearchParams,
 > = {
   queryKey: readonly unknown[];
   path: string;
@@ -24,7 +24,7 @@ export type StaticQuery<
 export type DynamicQuery<
   TData = unknown,
   TParams = undefined,
-  TSearchParams = SearchParams
+  TSearchParams = SearchParams,
 > = {
   queryKey: (params: TParams, searchParams?: TSearchParams) => readonly unknown[];
   path: (params: TParams, searchParams?: TSearchParams) => string;
@@ -39,7 +39,7 @@ export type DynamicQuery<
 export type QueryDefinition<
   TData = unknown,
   TParams = undefined,
-  TSearchParams = SearchParams
+  TSearchParams = SearchParams,
 > = StaticQuery<TData, TParams, TSearchParams> | DynamicQuery<TData, TParams, TSearchParams>;
 
 // Utility types for type inference
@@ -55,14 +55,16 @@ type UnionToIntersection<U> =
 export const defineQuery = <
   TData = unknown,
   TParams = undefined,
-  TSearchParams = SearchParams
+  TSearchParams = SearchParams,
 >(
-  def: QueryDefinition<TData, TParams, TSearchParams>
+  def: QueryDefinition<TData, TParams, TSearchParams>,
 ): QueryDefinition<TData, TParams, TSearchParams> => def;
 
 // Helper function to build URL with search params
 function buildUrlWithParams(baseUrl: string, searchParams?: SearchParams): string {
-  if (!searchParams) return baseUrl;
+  if (!searchParams) {
+    return baseUrl;
+  }
   const params = new URLSearchParams();
   Object.entries(searchParams).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
@@ -74,22 +76,22 @@ function buildUrlWithParams(baseUrl: string, searchParams?: SearchParams): strin
 
 // Create typed fetch hook with proper generic constraints
 export function createTypedFetchHook<
-  T extends Record<string, QueryDefinition<any, any, any>>[]
+  T extends Record<string, QueryDefinition<any, any, any>>[],
 >(...keySets: T) {
   type Merged = UnionToIntersection<T[number]>;
   const merged = Object.assign({}, ...keySets) as Merged;
 
   // Config interface for useTypedFetch
-  interface UseTypedFetchConfig<K extends keyof Merged & string> {
+  type UseTypedFetchConfig<K extends keyof Merged & string> = {
     params?: InferQueryParams<Merged[K]>;
     searchParams?: InferSearchParams<Merged[K]>;
     options?: Partial<UseQueryOptions<InferQueryData<Merged[K]>, Error>>;
-  }
+  };
 
   // Return a strongly typed hook function
   return function useTypedFetch<K extends keyof Merged & string>(
     key: K,
-    config?: UseTypedFetchConfig<K>
+    config?: UseTypedFetchConfig<K>,
   ) {
     // Get the response type from the query definition
     type ResponseType = InferQueryData<Merged[K]>;
@@ -186,7 +188,7 @@ export function createTypedFetchHook<
 
 // Create typed invalidation hook
 export function createTypedInvalidationHook<
-  T extends Record<string, QueryDefinition<any, any, any>>[]
+  T extends Record<string, QueryDefinition<any, any, any>>[],
 >(...keySets: T) {
   type Merged = UnionToIntersection<T[number]>;
   const merged = Object.assign({}, ...keySets) as Merged;
@@ -197,7 +199,7 @@ export function createTypedInvalidationHook<
     const invalidateQuery = <K extends keyof Merged & string>(
       key: K,
       params?: InferQueryParams<Merged[K]>,
-      searchParams?: InferSearchParams<Merged[K]>
+      searchParams?: InferSearchParams<Merged[K]>,
     ) => {
       const def = merged[key] as QueryDefinition<any, any, any>;
       const queryKey = typeof def.queryKey === 'function'
@@ -212,7 +214,7 @@ export function createTypedInvalidationHook<
 
 // Extract query keys for reuse
 export function extractQueryKeys<
-  T extends Record<string, QueryDefinition<any, any, any>>[]
+  T extends Record<string, QueryDefinition<any, any, any>>[],
 >(...keySets: T) {
   type Merged = UnionToIntersection<T[number]>;
   const merged = Object.assign({}, ...keySets) as Merged;
@@ -222,6 +224,7 @@ export function extractQueryKeys<
   for (const key in merged) {
     const def = merged[key] as QueryDefinition<any, any, any>;
     result[key] = typeof def.queryKey === 'function'
+      // eslint-disable-next-line ts/no-unsafe-function-type
       ? (params: any, searchParams?: any) => (def.queryKey as Function)(params, searchParams)
       : def.queryKey;
   }

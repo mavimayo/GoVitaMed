@@ -1,26 +1,26 @@
+import axios from 'axios';
+import { AlertCircle, RefreshCcw } from 'lucide-react';
 /**
  * ErrorCard component displays error messages with appropriate actions based on the error type.
  * Handles different error scenarios including unauthorized access, network errors, and general errors.
  *
  * @component
- * @param {Object} props - Component props
+ * @param {object} props - Component props
  * @param {unknown} props.error - The error object to be handled
  * @param {boolean} [props.isLoading] - Optional flag indicating if a retry action is in progress
  * @param {() => void} [props.onRetry] - Optional callback function to retry the failed action
  * @returns {JSX.Element} A card component displaying the error message and appropriate action buttons
  */
-import React, { useState, useCallback } from "react";
+import React, { useCallback, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
-  CardHeader,
-  CardTitle,
   CardDescription,
   CardFooter,
-} from "@/components/ui/card";
-import { AlertCircle, RefreshCcw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
-import { cn } from "@/lib/utils";
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export default function ErrorCard({
   error,
@@ -45,7 +45,7 @@ export default function ErrorCard({
       return err.response?.status === 401;
     }
 
-return false;
+    return false;
   }, []);
 
   /**
@@ -55,10 +55,10 @@ return false;
    */
   const isNetworkError = useCallback((err: unknown): boolean => {
     if (axios.isAxiosError(err)) {
-      return !err.response && err.code === "ERR_NETWORK";
+      return !err.response && err.code === 'ERR_NETWORK';
     }
 
-return false;
+    return false;
   }, []);
 
   /**
@@ -73,14 +73,14 @@ return false;
       }
       // Otherwise a generic server error
 
-      return "An error occurred while communicating with the server.";
+      return 'An error occurred while communicating with the server.';
     }
     if (err instanceof Error) {
       return err.message;
     }
     // Fallback
 
-    return "An unexpected error occurred.";
+    return 'An unexpected error occurred.';
   }, []);
 
   const [message] = useState<string>(getErrorMessage(error));
@@ -88,20 +88,20 @@ return false;
   return (
     <Card>
       <CardHeader>
-        <CardTitle className={"flex items-center text-destructive"}>
-          <AlertCircle className={"mr-2 h-5 w-5"} />
+        <CardTitle className="flex items-center text-destructive">
+          <AlertCircle className="mr-2 h-5 w-5" />
           Error
         </CardTitle>
         <CardDescription>{message}</CardDescription>
       </CardHeader>
 
       {/* Show different buttons depending on the error */}
-      <CardFooter className={"flex items-center justify-center gap-x-3"}>
+      <CardFooter className="flex items-center justify-center gap-x-3">
         {isUnauthorized(error) ? (
           <Button
             onClick={onLogout}
-            variant={"outline"}
-            size={"lg"}
+            variant="outline"
+            size="lg"
             disabled={isLoading}
           >
             Logout
@@ -111,13 +111,13 @@ return false;
             {onRetry && (
               <Button
                 onClick={onRetry}
-                variant={"outline"}
-                size={"lg"}
+                variant="outline"
+                size="lg"
                 disabled={isLoading}
               >
                 <RefreshCcw
-                  className={cn("mr-2 h-4 w-4", {
-                    "animate-spin": isLoading,
+                  className={cn('mr-2 h-4 w-4', {
+                    'animate-spin': isLoading,
                   })}
                 />
                 No Network – Try Again
@@ -129,13 +129,13 @@ return false;
             {onRetry && (
               <Button
                 onClick={onRetry}
-                variant={"outline"}
-                size={"lg"}
+                variant="outline"
+                size="lg"
                 disabled={isLoading}
               >
                 <RefreshCcw
-                  className={cn("mr-2 h-4 w-4", {
-                    "animate-spin": isLoading,
+                  className={cn('mr-2 h-4 w-4', {
+                    'animate-spin': isLoading,
                   })}
                 />
                 Try Again
