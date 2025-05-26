@@ -3,10 +3,12 @@
 import * as datepicker from '@zag-js/date-picker';
 import { normalizeProps, useMachine } from '@zag-js/react';
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useId } from 'react';
+import { useId, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+
+type DateRangeType = 'future' | 'past' | 'all';
 
 type DatePickerProps = {
   value?: Date[];
@@ -25,6 +27,8 @@ type DatePickerProps = {
   max?: Date;
   closeOnSelect?: boolean;
   className?: string;
+  // Date range type for automatic min/max setting
+  allowedDateRange?: DateRangeType;
 };
 
 export default function DatePicker({
@@ -43,7 +47,25 @@ export default function DatePicker({
   className,
   singleValue,
   onSingleValueChange,
+  allowedDateRange = 'all',
 }: DatePickerProps) {
+  // State for input validation
+  const [inputError, setInputError] = useState<string>('');
+  
+  // Handle date range type for automatic min/max setting
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  let computedMin = min;
+  let computedMax = max;
+  
+  if (allowedDateRange === 'future') {
+    computedMin = min || tomorrow;
+  } else if (allowedDateRange === 'past') {
+    computedMax = max || today;
+  }
+
   // Handle single date mode conversion
   const actualValue = singleValue ? [singleValue] : value;
   const actualDefaultValue = singleValue ? (singleValue ? [singleValue] : undefined) : defaultValue;
@@ -71,14 +93,38 @@ export default function DatePicker({
     readOnly,
     placeholder,
     name,
-    min: min ? datepicker.parse(min.toISOString().split('T')[0]) : undefined,
-    max: max ? datepicker.parse(max.toISOString().split('T')[0]) : undefined,
+    min: computedMin ? datepicker.parse(computedMin.toISOString().split('T')[0]) : undefined,
+    max: computedMax ? datepicker.parse(computedMax.toISOString().split('T')[0]) : undefined,
     closeOnSelect,
   });
 
   const api = datepicker.connect(service, normalizeProps);
 
-  // Handle input with proper masking
+  // Validate date parts (MM/DD/YYYY)
+  const validateDateInput = (value: string) => {
+    // Extract the current parts being typed
+    const parts = value.split('/');
+    let error = '';
+
+    if (parts[0] && parts[0].length >= 2) {
+      const month = Number.parseInt(parts[0], 10);
+      if (month < 1 || month > 12) {
+        error = 'Month must be between 01-12';
+      }
+    }
+
+    if (parts[1] && parts[1].length >= 2) {
+      const day = Number.parseInt(parts[1], 10);
+      if (day < 1 || day > 31) {
+        error = error || 'Day must be between 01-31';
+      }
+    }
+
+    setInputError(error);
+    return error === '';
+  };
+
+  // Handle input with proper masking and validation
   const handleInputEvent = (e: React.FormEvent<HTMLInputElement>) => {
     const input = e.currentTarget;
     const value = input.value;
@@ -97,6 +143,9 @@ export default function DatePicker({
         }
       }
     }
+
+    // Validate the input as user types
+    validateDateInput(formattedValue);
 
     // Only update if the formatted value is different
     if (formattedValue !== value) {
@@ -166,6 +215,9 @@ export default function DatePicker({
             disabled && 'opacity-50 cursor-not-allowed',
             readOnly && 'cursor-default',
           )}
+          style={{
+            color: inputError ? '#ef4444' : undefined, // red-500 when there's an error
+          }}
           disabled={disabled}
           readOnly={readOnly}
           placeholder={placeholder}
@@ -182,6 +234,11 @@ export default function DatePicker({
           <Calendar className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Error message */}
+      {inputError && (
+        <p className="text-xs text-red-500 mt-1">{inputError}</p>
+      )}
 
       {api.open && (
         <div {...api.getPositionerProps()} className="absolute z-50 mt-1">
