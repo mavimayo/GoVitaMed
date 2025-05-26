@@ -175,6 +175,7 @@ export default function DatePicker({
           {...api.getTriggerProps()}
           variant="ghost"
           size="icon"
+          type="button"
           disabled={disabled}
           className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
         >
@@ -195,12 +196,16 @@ export default function DatePicker({
                   {...api.getPrevTriggerProps()}
                   variant="ghost"
                   size="icon"
+                  type="button"
+
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button
                   {...api.getViewTriggerProps()}
                   variant="ghost"
+                  type="button"
+
                   className="text-primary font-medium hover:text-primary/80"
                 >
                   {api.visibleRangeText.start}
@@ -208,6 +213,8 @@ export default function DatePicker({
                 <Button
                   {...api.getNextTriggerProps()}
                   variant="ghost"
+                  type="button"
+
                   size="icon"
                 >
                   <ChevronRight className="h-4 w-4" />
@@ -233,6 +240,8 @@ export default function DatePicker({
                             {...api.getDayTableCellTriggerProps({ value })}
                             variant="ghost"
                             size="icon"
+                            type="button"
+
                             className={cn(
                               'h-9 w-9 p-0 font-normal text-primary',
                               '[&[data-selected]]:bg-primary [&[data-selected]]:text-primary-foreground',
@@ -259,17 +268,23 @@ export default function DatePicker({
                   {...api.getPrevTriggerProps({ view: 'month' })}
                   variant="ghost"
                   size="icon"
+                  type="button"
+
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
                 <Button
                   {...api.getViewTriggerProps({ view: 'month' })}
                   variant="ghost"
+                  type="button"
+
                   className="text-primary font-medium hover:text-primary/80"
                 >
                   {api.visibleRange.start.year}
                 </Button>
                 <Button
+                  type="button"
+
                   {...api.getNextTriggerProps({ view: 'month' })}
                   variant="ghost"
                   size="icon"
@@ -296,6 +311,8 @@ export default function DatePicker({
                               ...month,
                               columns: 4,
                             })}
+                            type="button"
+
                             variant="ghost"
                             className={cn(
                               'h-9 w-16 p-0 font-normal text-primary',
@@ -319,6 +336,8 @@ export default function DatePicker({
                   {...api.getPrevTriggerProps({ view: 'year' })}
                   variant="ghost"
                   size="icon"
+                  type="button"
+
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
@@ -332,6 +351,8 @@ export default function DatePicker({
                   {...api.getNextTriggerProps({ view: 'year' })}
                   variant="ghost"
                   size="icon"
+                  type="button"
+
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -355,6 +376,8 @@ export default function DatePicker({
                               ...year,
                               columns: 4,
                             })}
+                            type="button"
+
                             variant="ghost"
                             className={cn(
                               'h-9 w-16 p-0 font-normal text-primary',
