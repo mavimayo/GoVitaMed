@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { VariantProps } from 'class-variance-authority';
-import { Slot } from '@radix-ui/react-slot';
+import { Slot as SlotPrimitive } from 'radix-ui';
 import { cva } from 'class-variance-authority';
 import * as React from 'react';
 import { cn } from '@/lib/utils';
@@ -45,7 +45,7 @@ const Typography = ({
   color,
   ...props
 }: TypographyProps) => {
-  const Component = asChild ? Slot : as || 'p';
+  const Component = asChild ? SlotPrimitive.Slot : as || 'p';
   const stylingVariant = variant || (as as TypographyProps['variant']) || 'p';
 
   return (

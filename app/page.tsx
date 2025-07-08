@@ -1,20 +1,9 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
-import DatePicker from '@/components/zag/date-picker';
-import { useTypedFetch, useTypedInvalidation } from '@/lib/query';
+import { useTypedInvalidation } from '@/lib/query';
 
 export default function Home() {
-  const query = useTypedFetch('all', {
-    params: {
-      id: 1,
-    },
-    searchParams: {
-      searchParams: 'test',
-    },
-
-  });
-  console.log(query);
   const { invalidateQuery } = useTypedInvalidation();
 
   return (
@@ -29,7 +18,7 @@ export default function Home() {
       >
         Button
       </Button>
-      <DatePicker />
+
     </div>
   );
 }
