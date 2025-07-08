@@ -1,11 +1,12 @@
 'use client';
 
-import { type Label as LabelPrimitive, Slot as SlotPrimitive } from 'radix-ui';
+import type { Label as LabelPrimitive } from 'radix-ui';
 import type {
   ControllerProps,
   FieldPath,
   FieldValues,
 } from 'react-hook-form';
+import { Slot as SlotPrimitive } from 'radix-ui';
 
 import * as React from 'react';
 import {
@@ -34,9 +35,10 @@ const FormFieldContext = React.createContext<FormFieldContextValue>(
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
+  TTransformedValues extends FieldValues = FieldValues,
 >({
   ...props
-}: ControllerProps<TFieldValues, TName>) => {
+}: ControllerProps<TFieldValues, TName, TTransformedValues>) => {
   return (
     <FormFieldContext value={{ name: props.name }}>
       <Controller {...props} />
