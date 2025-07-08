@@ -46,10 +46,14 @@ type FormProps<Schema extends ZodType<any, any, any>> = {
 
   /**
    * Props forwarded to the native `<form>` element.
-   * `onSubmit`, `children`, and `disabled` are omitted.
    */
-  formProps: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'children' | 'disabled'>;
-} & Omit<React.ComponentProps<'fieldset'>, 'children' | 'disabled'>;
+  formProps?: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'children'>;
+
+  /**
+   * Props forwarded to the `<fieldset>` element.
+   */
+  fieldsetProps?: Omit<React.ComponentProps<'fieldset'>, 'disabled' | 'children'>;
+};
 
 /**
  * A strongly-typed, reusable form wrapper built with `react-hook-form`, `zod`, and optionally `shadcn/ui`.
@@ -66,9 +70,9 @@ export default function FormModified<Schema extends ZodType<any, any, any>>({
   onSubmit,
   children,
   defaultValues,
-  disabled,
+  disabled = false,
   formProps,
-  ...props
+  fieldsetProps,
 }: FormProps<Schema>) {
   const methods = useForm<ZodInfer<Schema>>({
     resolver: zodResolver(schema),
@@ -81,9 +85,13 @@ export default function FormModified<Schema extends ZodType<any, any, any>>({
         onSubmit={methods.handleSubmit(onSubmit)}
         noValidate
         {...formProps}
-        className={cn('w-full', formProps.className)}
+        className={cn('w-full', formProps?.className)}
       >
-        <fieldset {...props} disabled={disabled}>
+        <fieldset
+          {...fieldsetProps}
+          disabled={disabled}
+          className={cn(fieldsetProps?.className)}
+        >
           {children(methods)}
         </fieldset>
       </form>
