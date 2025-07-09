@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea';
  * @template T - A form values type extending `FieldValues`
  */
 export type TextareaFormFieldProps<T extends FieldValues> =
-  Omit<React.ComponentProps<'textarea'>, 'form'> &
+  Omit<React.ComponentProps<'textarea'>, 'form' | 'onChange' | 'value'> &
   Omit<FormFieldProps<T>, 'children'>;
 
 /**

@@ -1,6 +1,5 @@
 'use client';
 import * as z from 'zod';
-import { DatepickerFormField, InputFormField } from '@/components/form';
 import FormModified from '@/components/form/form-modified';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
@@ -14,7 +13,6 @@ const schema = z.object({
 export default function Home() {
   const handleSubmit = (data: z.infer<typeof schema>) => {
     console.log('Form submitted:', data);
-    // Handle form submission here
   };
 
   return (
@@ -29,25 +27,26 @@ export default function Home() {
         }}
 
       >
-        {form => (
+        {({ components }) => (
           <>
-            <InputFormField
+            <components.Input
               name="name"
               label="Name"
               placeholder="Enter your name"
-              control={form.control}
             />
-            <InputFormField
+            <components.Textarea
               name="description"
               label="Description"
               placeholder="Enter a description"
-              control={form.control}
+              className="h-32"
             />
-            <DatepickerFormField
+            <components.DatePicker
               name="dob"
               label="Date of Birth"
-              control={form.control}
+
+              className="w-full"
             />
+
             <Button type="submit">
               Submit
             </Button>

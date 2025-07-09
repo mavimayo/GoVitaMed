@@ -14,7 +14,7 @@ import { FormFieldWrapper } from './field-wrapper';
  * @template T - A form values type extending `FieldValues`
  */
 export type InputFormFieldProps<T extends FieldValues> =
-  Omit<React.ComponentProps<'input'>, 'form'> &
+  Omit<React.ComponentProps<'input'>, 'form' | 'onChange' | 'value'> &
   Omit<FormFieldProps<T>, 'children'>;
 
 /**

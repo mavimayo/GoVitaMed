@@ -1,71 +1,73 @@
+'use client';
+
 import type { ReactNode } from 'react';
 import type {
   DefaultValues,
+  FieldValues,
   SubmitHandler,
   UseFormReturn,
 } from 'react-hook-form';
 import type { infer as ZodInfer, ZodType } from 'zod';
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import type { DatepickerFormFieldProps } from './datepicker-form-field';
+import type { FormFieldProps } from './field-wrapper';
+import type { InputFormFieldProps } from './input-form-field';
+import type { TextareaFormFieldProps } from './textarea-form-field';
 
-import { Form } from '@/components/ui/form'; // Replace with <div> if not using shadcn
+import { zodResolver } from '@hookform/resolvers/zod';
+import { memo, useEffect, useMemo, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { Form } from '@/components/ui/form';
 import { cn } from '@/lib/utils';
 
+import DatepickerFormField from './datepicker-form-field';
+import { FormFieldWrapper } from './field-wrapper';
+import InputFormField from './input-form-field';
+import TextareaFormField from './textarea-form-field';
+
 /**
- * Props for the `FormModified` component.
- *
- * @template Schema - A Zod schema used to infer form shape and validation.
+ * Component set with control already injected.
  */
-type FormProps<Schema extends ZodType<any, any, any>> = {
-  /**
-   * Zod schema for validating the form data.
-   */
-  schema: Schema;
-
-  /**
-   * Submit handler that receives the parsed form values.
-   */
-  onSubmit: SubmitHandler<ZodInfer<Schema>>;
-
-  /**
-   * Render function that receives the `react-hook-form` methods.
-   * Typically used to render fields.
-   */
-  children: (form: UseFormReturn<ZodInfer<Schema>>) => ReactNode;
-
-  /**
-   * Optional default values for the form fields.
-   */
-  defaultValues?: DefaultValues<ZodInfer<Schema>>;
-
-  /**
-   * If true, disables all inputs inside the fieldset.
-   */
-  disabled?: boolean;
-
-  /**
-   * Props forwarded to the native `<form>` element.
-   */
-  formProps?: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'children'>;
-
-  /**
-   * Props forwarded to the `<fieldset>` element.
-   */
-  fieldsetProps?: Omit<React.ComponentProps<'fieldset'>, 'disabled' | 'children'>;
+type FormComponents<T extends FieldValues> = {
+  Input: React.ComponentType<Omit<InputFormFieldProps<T>, 'control'>>;
+  Textarea: React.ComponentType<Omit<TextareaFormFieldProps<T>, 'control'>>;
+  DatePicker: React.ComponentType<Omit<DatepickerFormFieldProps<T>, 'control'>>;
+  Field: React.ComponentType<Omit<FormFieldProps<T>, 'control'>>;
 };
 
 /**
- * A strongly-typed, reusable form wrapper built with `react-hook-form`, `zod`, and optionally `shadcn/ui`.
- *
- * Features:
- * - Schema-based validation with Zod
- * - Flexible styling via `formProps` and fieldset props
- * - Clean and composable field rendering via render function
- *
- * @template Schema - Zod schema that defines the form shape
+ * Create pre-configured form field components using provided control.
  */
-export default function FormModified<Schema extends ZodType<any, any, any>>({
+function createFormComponents<T extends FieldValues>(
+  control: UseFormReturn<T>['control'],
+): FormComponents<T> {
+  return {
+    Input: props => <InputFormField control={control} {...props} />,
+    Textarea: props => <TextareaFormField control={control} {...props} />,
+    DatePicker: props => <DatepickerFormField control={control} {...props} />,
+    Field: props => <FormFieldWrapper control={control} {...props} />,
+  };
+}
+
+/**
+ * Form props accepting Zod schema and configuration.
+ */
+type FormProps<Schema extends ZodType<any, any, any>> = {
+  schema: Schema;
+  onSubmit: SubmitHandler<ZodInfer<Schema>>;
+  children: (context: {
+    methods: UseFormReturn<ZodInfer<Schema>>;
+    components: FormComponents<ZodInfer<Schema>>;
+  }) => ReactNode;
+  defaultValues?: DefaultValues<ZodInfer<Schema>>;
+  disabled?: boolean;
+  formProps?: Omit<React.ComponentProps<'form'>, 'onSubmit' | 'children'>;
+  fieldsetProps?: Omit<React.ComponentProps<'fieldset'>, 'disabled' | 'children'>;
+  useFieldset?: boolean;
+  formKey?: string | number;
+};
+
+function FormModifiedComponent<Schema extends ZodType<any, any, any>>({
   schema,
   onSubmit,
   children,
@@ -73,28 +75,66 @@ export default function FormModified<Schema extends ZodType<any, any, any>>({
   disabled = false,
   formProps,
   fieldsetProps,
+  useFieldset = true,
+  formKey,
 }: FormProps<Schema>) {
+  const previousKey = useRef(formKey);
+
   const methods = useForm<ZodInfer<Schema>>({
     resolver: zodResolver(schema),
     defaultValues,
   });
 
+  // Reset form when formKey changes
+  useEffect(() => {
+    if (
+      formKey !== undefined
+      && formKey !== previousKey.current
+    ) {
+      previousKey.current = formKey;
+      methods.reset(defaultValues);
+    }
+  }, [formKey, defaultValues, methods]);
+
+  const components = useMemo(
+    () => createFormComponents(methods.control),
+    [methods.control],
+  );
+
+  const handleSubmit = methods.handleSubmit(onSubmit);
+  const formClass = cn('w-full', formProps?.className);
+  const wrapperClass = cn(fieldsetProps?.className);
+
   return (
     <Form {...methods}>
       <form
-        onSubmit={methods.handleSubmit(onSubmit)}
+        onSubmit={handleSubmit}
         noValidate
         {...formProps}
-        className={cn('w-full', formProps?.className)}
+        className={formClass}
       >
-        <fieldset
-          {...fieldsetProps}
-          disabled={disabled}
-          className={cn(fieldsetProps?.className)}
-        >
-          {children(methods)}
-        </fieldset>
+        {useFieldset ? (
+          <fieldset
+            {...fieldsetProps}
+            disabled={disabled}
+            className={wrapperClass}
+          >
+            {children({ methods, components })}
+          </fieldset>
+        ) : (
+          <div className={wrapperClass}>
+            {children({ methods, components })}
+          </div>
+        )}
       </form>
     </Form>
   );
 }
+
+const FormModified = memo(FormModifiedComponent) as <
+  Schema extends ZodType<any, any, any>,
+>(
+  props: FormProps<Schema>
+) => ReactNode;
+
+export default FormModified;
