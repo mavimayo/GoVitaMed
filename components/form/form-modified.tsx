@@ -65,6 +65,16 @@ type FormProps<Schema extends ZodType<any, any, any>> = {
   fieldsetProps?: Omit<React.ComponentProps<'fieldset'>, 'disabled' | 'children'>;
   useFieldset?: boolean;
   formKey?: string | number;
+  /**
+   * If true, shows a browser alert when user tries to navigate away with unsaved changes.
+   * This prevents accidental loss of form data.
+   */
+  warnOnUnsavedChanges?: boolean;
+  /**
+   * Custom message to show in the browser alert.
+   * Defaults to "You have unsaved changes. Are you sure you want to leave?"
+   */
+  unsavedChangesMessage?: string;
 };
 
 function FormModifiedComponent<Schema extends ZodType<any, any, any>>({
@@ -77,6 +87,8 @@ function FormModifiedComponent<Schema extends ZodType<any, any, any>>({
   fieldsetProps,
   useFieldset = true,
   formKey,
+  warnOnUnsavedChanges = false,
+  unsavedChangesMessage = 'You have unsaved changes. Are you sure you want to leave?',
 }: FormProps<Schema>) {
   const previousKey = useRef(formKey);
 
@@ -84,6 +96,10 @@ function FormModifiedComponent<Schema extends ZodType<any, any, any>>({
     resolver: zodResolver(schema),
     defaultValues,
   });
+
+  // Track if form has been modified
+  const { formState } = methods;
+  const hasUnsavedChanges = formState.isDirty && !formState.isSubmitSuccessful;
 
   // Reset form when formKey changes
   useEffect(() => {
@@ -95,6 +111,27 @@ function FormModifiedComponent<Schema extends ZodType<any, any, any>>({
       methods.reset(defaultValues);
     }
   }, [formKey, defaultValues, methods]);
+
+  // Handle beforeunload event to warn about unsaved changes
+  useEffect(() => {
+    if (!warnOnUnsavedChanges) {
+      return;
+    }
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (hasUnsavedChanges) {
+        event.preventDefault();
+        event.returnValue = unsavedChangesMessage; // For older browsers
+        return unsavedChangesMessage; // For modern browsers
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [warnOnUnsavedChanges, hasUnsavedChanges, unsavedChangesMessage]);
 
   const components = useMemo(
     () => createFormComponents(methods.control),

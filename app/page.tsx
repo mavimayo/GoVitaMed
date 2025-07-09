@@ -25,7 +25,8 @@ export default function Home() {
         defaultValues={{
           description: '',
         }}
-
+        warnOnUnsavedChanges={true}
+        unsavedChangesMessage="You have unsaved form data. Are you sure you want to leave this page?"
       >
         {({ components }) => (
           <>
