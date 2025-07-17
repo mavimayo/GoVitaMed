@@ -57,8 +57,8 @@ function Loader({
  *
  * @template T - The type of data returned by the query.
  */
-type QueryStatusProps<T> =
-  | {
+export type QueryStatusProps<T>
+  = | {
     query: UseQueryResult<T>;
     onWithLoadingState: (data: T, isLoading: boolean) => JSX.Element;
     onError?:

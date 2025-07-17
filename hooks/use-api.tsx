@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { env } from '@/env';
 import useToast from '@/hooks/use-toast';
+import { buildRequestUrl } from '@/lib/utils';
 
 type DataRequestType<T> = {
   path: string;
@@ -45,7 +46,7 @@ const useApi = <T,>({
     path,
     onUploadProgress,
   }: DataRequestType<T>) => {
-    const REQUEST_PATH = `${API_URL}${path}`;
+    const REQUEST_PATH = buildRequestUrl(API_URL, path);
 
     // config contains token and data jo api per ja raha hai
     const config = {

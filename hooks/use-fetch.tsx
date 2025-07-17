@@ -3,6 +3,7 @@ import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { env } from '@/env';
+import { buildRequestUrl } from '@/lib/utils';
 
 export type FetchApiType = {
   queryKey: string[];
@@ -23,7 +24,7 @@ export function useFetch<T>({ path, queryKey, ...config }: IUseFetch<T>) {
   if (!path) {
     throw new Error('path is required');
   }
-  const REQUEST_URL = env.NEXT_PUBLIC_APP_URL + path;
+  const REQUEST_URL = buildRequestUrl(env.NEXT_PUBLIC_APP_URL, path);
 
   const fetchData = async (): Promise<T> => {
     try {
@@ -34,8 +35,10 @@ export function useFetch<T>({ path, queryKey, ...config }: IUseFetch<T>) {
             }
           : {},
       });
-
-      return response.data.data;
+      if (response.data.data) {
+        return response.data.data;
+      }
+      return response.data;
     } catch (error: any) {
       if (!error.response) {
         throw new Error(

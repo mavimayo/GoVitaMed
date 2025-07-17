@@ -48,8 +48,8 @@ export type InferQueryParams<T> = T extends { _params?: infer P } ? P : undefine
 export type InferSearchParams<T> = T extends { _searchParams?: infer S } ? S : SearchParams;
 
 // Helper type for merging unions
-type UnionToIntersection<U> =
-  (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+type UnionToIntersection<U>
+  = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
 // Define query function with proper typings
 export const defineQuery = <
@@ -74,35 +74,87 @@ function buildUrlWithParams(baseUrl: string, searchParams?: SearchParams): strin
   return params.toString() ? `${baseUrl}?${params}` : baseUrl;
 }
 
-// Create typed fetch hook with proper generic constraints
-export function createTypedFetchHook<
-  T extends Record<string, QueryDefinition<any, any, any>>[],
->(...keySets: T) {
-  type Merged = UnionToIntersection<T[number]>;
-  const merged = Object.assign({}, ...keySets) as Merged;
-
-  // Config interface for useTypedFetch
-  type UseTypedFetchConfig<K extends keyof Merged & string> = {
-    params?: InferQueryParams<Merged[K]>;
-    searchParams?: InferSearchParams<Merged[K]>;
-    options?: Partial<UseQueryOptions<InferQueryData<Merged[K]>, Error>>;
+// New query config type for the object-based API
+export type QueryConfig<TParams = any, TSearchParams = any> = {
+  query: {
+    module: string;
+    key: string;
   };
+  params?: TParams;
+  searchParams?: TSearchParams;
+  options?: Partial<UseQueryOptions<any, Error>>;
+};
 
-  // Return a strongly typed hook function
-  return function useTypedFetch<K extends keyof Merged & string>(
-    key: K,
-    config?: UseTypedFetchConfig<K>,
+// Create typed fetch hook with proper generic constraints - supports both flat and nested structures
+export function createTypedFetchHook<T extends Record<string, Record<string, QueryDefinition<any, any, any>>>>(queryKeys: T) {
+  // Create flattened query object
+  const flatQueries = {} as Record<string, QueryDefinition<any, any, any>>;
+
+  Object.entries(queryKeys).forEach(([moduleKey, moduleValue]) => {
+    if (typeof moduleValue === 'object' && moduleValue !== null) {
+      // This is a nested module structure
+      Object.entries(moduleValue as Record<string, QueryDefinition<any, any, any>>).forEach(([queryKey, queryDef]) => {
+        flatQueries[`${moduleKey}.${queryKey}`] = queryDef;
+      });
+    }
+  });
+
+  // Function overloads for different call signatures
+  function useTypedFetch<M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+    config: {
+      query: { module: M; key: K };
+      params?: InferQueryParams<ExtractQueryDef<T, M, K>>;
+      searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>>;
+      options?: Partial<UseQueryOptions<InferQueryData<ExtractQueryDef<T, M, K>>, Error>>;
+    }
+  ): ReturnType<typeof useFetch>;
+  function useTypedFetch(
+    key: string,
+    config?: {
+      params?: any;
+      searchParams?: any;
+      options?: Partial<UseQueryOptions<any, Error>>;
+    }
+  ): ReturnType<typeof useFetch>;
+
+  // Implementation
+  function useTypedFetch(
+    keyOrConfig: string | { query: { module: string; key: string }; params?: any; searchParams?: any; options?: any },
+    legacyConfig?: {
+      params?: any;
+      searchParams?: any;
+      options?: Partial<UseQueryOptions<any, Error>>;
+    },
   ) {
-    // Get the response type from the query definition
-    type ResponseType = InferQueryData<Merged[K]>;
+    let key: string;
+    let params: any;
+    let searchParams: any;
+    let options: Partial<UseQueryOptions<any, Error>> | undefined;
 
-    const def = merged[key] as QueryDefinition<ResponseType, any, any>;
-    const params = config?.params;
-    const searchParams = config?.searchParams;
-    const options = config?.options;
+    // Handle both API styles
+    if (typeof keyOrConfig === 'string') {
+      // Legacy API: useTypedFetch("posts.getAll", { params, searchParams, options })
+      key = keyOrConfig;
+      params = legacyConfig?.params;
+      searchParams = legacyConfig?.searchParams;
+      options = legacyConfig?.options;
+    } else {
+      // New API: useTypedFetch({ query: { module: "posts", key: "getAll" }, params, searchParams, options })
+      const config = keyOrConfig as QueryConfig;
+      key = `${config.query.module}.${config.query.key}`;
+      params = config.params;
+      searchParams = config.searchParams;
+      options = config.options;
+    }
+
+    const def = flatQueries[key] as QueryDefinition<any, any, any>;
+
+    if (!def) {
+      throw new Error(`Query definition not found for key: ${key}`);
+    }
 
     if (def.requiresParams && !params) {
-      console.error(`Query "${String(key)}" requires params but none were provided`);
+      console.error(`Query "${key}" requires params but none were provided`);
     }
 
     // Determine queryKey based on static or dynamic definition
@@ -178,38 +230,14 @@ export function createTypedFetchHook<
     const path = buildUrlWithParams(basePath, searchParams as SearchParams | undefined);
 
     // Return with explicit type annotation and ensure options are properly passed
-    return useFetch<ResponseType>({
+    return useFetch<any>({
       queryKey,
       path,
       ...(options || {}),
     });
-  };
-}
+  }
 
-// Create typed invalidation hook
-export function createTypedInvalidationHook<
-  T extends Record<string, QueryDefinition<any, any, any>>[],
->(...keySets: T) {
-  type Merged = UnionToIntersection<T[number]>;
-  const merged = Object.assign({}, ...keySets) as Merged;
-
-  return function useTypedInvalidation() {
-    const queryClient = useQueryClient();
-
-    const invalidateQuery = <K extends keyof Merged & string>(
-      key: K,
-      params?: InferQueryParams<Merged[K]>,
-      searchParams?: InferSearchParams<Merged[K]>,
-    ) => {
-      const def = merged[key] as QueryDefinition<any, any, any>;
-      const queryKey = typeof def.queryKey === 'function'
-        ? def.queryKey(params as any, searchParams)
-        : def.queryKey;
-      return queryClient.invalidateQueries({ queryKey });
-    };
-
-    return { invalidateQuery };
-  };
+  return useTypedFetch;
 }
 
 // Extract query keys for reuse
@@ -233,5 +261,142 @@ export function extractQueryKeys<
     [K in keyof Merged]: Merged[K] extends DynamicQuery<any, infer P, infer S>
       ? (params: P, searchParams?: S) => readonly unknown[]
       : readonly unknown[];
+  };
+}
+
+// Type helpers for extracting module and key types
+type ExtractModules<T> = T extends Record<string, any>
+  ? keyof T
+  : never;
+
+type ExtractKeys<T, M extends keyof T> = T[M] extends Record<string, any>
+  ? keyof T[M]
+  : never;
+
+type ExtractQueryDef<T, M extends keyof T, K extends keyof T[M]> = T[M][K] extends QueryDefinition<any, any, any>
+  ? T[M][K]
+  : never;
+
+// Unified config type with proper typing
+export type TypedQueryConfig<
+  T extends Record<string, Record<string, QueryDefinition<any, any, any>>>,
+  M extends ExtractModules<T> = ExtractModules<T>,
+  K extends ExtractKeys<T, M> = ExtractKeys<T, M>,
+> = {
+  module: M;
+  key: K;
+  params?: InferQueryParams<ExtractQueryDef<T, M, K>>;
+  searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>>;
+  options?: Partial<UseQueryOptions<InferQueryData<ExtractQueryDef<T, M, K>>, Error>>;
+};
+
+// Create typed query client hook with full typing and autocomplete
+export function createTypedQueryClientHook<T extends Record<string, Record<string, QueryDefinition<any, any, any>>>>(queryKeys: T) {
+  // Create flattened query object for internal use
+  const flatQueries = {} as Record<string, QueryDefinition<any, any, any>>;
+
+  Object.entries(queryKeys).forEach(([moduleKey, moduleValue]) => {
+    if (typeof moduleValue === 'object' && moduleValue !== null) {
+      Object.entries(moduleValue as Record<string, QueryDefinition<any, any, any>>).forEach(([queryKey, queryDef]) => {
+        flatQueries[`${moduleKey}.${queryKey}`] = queryDef;
+      });
+    }
+  });
+
+  // Helper function to generate query key from config
+  function generateQueryKey<M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+    config: { module: M; key: K; params?: any; searchParams?: any },
+  ): readonly unknown[] {
+    const flatKey = `${String(config.module)}.${String(config.key)}`;
+    const def = flatQueries[flatKey];
+
+    if (!def) {
+      throw new Error(`Query definition not found for: ${flatKey}`);
+    }
+
+    if (def.requiresParams && !config.params) {
+      console.warn(`Query "${flatKey}" requires params but none were provided`);
+    }
+
+    if (typeof def.queryKey === 'function') {
+      return def.queryKey(config.params, config.searchParams);
+    } else {
+      const baseKey = [...def.queryKey];
+
+      if (config.params) {
+        baseKey.push(config.params);
+      }
+
+      if (config.searchParams && Object.keys(config.searchParams).length > 0) {
+        baseKey.push(Object.keys(config.searchParams).sort().join(','));
+        baseKey.push(Object.values(config.searchParams)
+          .filter(v => v !== undefined && v !== null)
+          .map(String)
+          .sort()
+          .join(','));
+      }
+
+      return baseKey;
+    }
+  }
+
+  return function useTypedQueryClient() {
+    const queryClient = useQueryClient();
+
+    return {
+      // Set query data with full typing
+      setQueryData: <M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+        config: {
+          config: { module: M; key: K; params?: InferQueryParams<ExtractQueryDef<T, M, K>>; searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>> };
+          updater: InferQueryData<ExtractQueryDef<T, M, K>> | ((prev: InferQueryData<ExtractQueryDef<T, M, K>> | undefined) => InferQueryData<ExtractQueryDef<T, M, K>>);
+        },
+      ) => {
+        const queryKey = generateQueryKey(config.config);
+        return queryClient.setQueryData(queryKey, config.updater);
+      },
+
+      // Get query data with full typing
+      getQueryData: <M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+        config: {
+          config: { module: M; key: K; params?: InferQueryParams<ExtractQueryDef<T, M, K>>; searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>> };
+        },
+      ): InferQueryData<ExtractQueryDef<T, M, K>> | undefined => {
+        const queryKey = generateQueryKey(config.config);
+        return queryClient.getQueryData(queryKey);
+      },
+
+      // Invalidate query with full typing
+      invalidateQuery: <M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+        config: {
+          config: { module: M; key: K; params?: InferQueryParams<ExtractQueryDef<T, M, K>>; searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>> };
+        },
+      ) => {
+        const queryKey = generateQueryKey(config.config);
+        return queryClient.invalidateQueries({ queryKey });
+      },
+
+      // Remove query with full typing
+      removeQuery: <M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+        config: {
+          config: { module: M; key: K; params?: InferQueryParams<ExtractQueryDef<T, M, K>>; searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>> };
+        },
+      ) => {
+        const queryKey = generateQueryKey(config.config);
+        return queryClient.removeQueries({ queryKey });
+      },
+
+      // Get query state with full typing
+      getQueryState: <M extends ExtractModules<T>, K extends ExtractKeys<T, M>>(
+        config: {
+          config: { module: M; key: K; params?: InferQueryParams<ExtractQueryDef<T, M, K>>; searchParams?: InferSearchParams<ExtractQueryDef<T, M, K>> };
+        },
+      ) => {
+        const queryKey = generateQueryKey(config.config);
+        return queryClient.getQueryState(queryKey);
+      },
+
+      // Access to the underlying query client for advanced use cases
+      queryClient,
+    };
   };
 }
