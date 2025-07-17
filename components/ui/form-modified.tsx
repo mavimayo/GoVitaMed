@@ -8,7 +8,6 @@ import type {
   Path,
   SubmitHandler,
   UseFormReturn,
-
 } from 'react-hook-form';
 import type { infer as ZodInfer, ZodType } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -272,5 +271,4 @@ const FormModified = memo(FormModifiedComponent) as <
 >(
   props: FormProps<Schema>
 ) => ReactNode;
-
 export default FormModified;

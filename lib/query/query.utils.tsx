@@ -177,11 +177,11 @@ export function createTypedFetchHook<
     // Add search parameters to URL
     const path = buildUrlWithParams(basePath, searchParams as SearchParams | undefined);
 
-    // Return with explicit type annotation
+    // Return with explicit type annotation and ensure options are properly passed
     return useFetch<ResponseType>({
       queryKey,
       path,
-      ...options,
+      ...(options || {}),
     });
   };
 }
