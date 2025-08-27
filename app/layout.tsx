@@ -1,17 +1,20 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Open_Sans, Raleway } from 'next/font/google';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import Provider from '@/provider';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Font Configuration
+const openSans = Open_Sans({
   subsets: ['latin'],
+  variable: '--font-open-sans',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const raleway = Raleway({
   subsets: ['latin'],
+  variable: '--font-raleway',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -26,9 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${openSans.variable} ${raleway.variable} antialiased`}>
         <NuqsAdapter>
           <Provider>{children}</Provider>
         </NuqsAdapter>

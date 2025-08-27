@@ -8,18 +8,35 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
+@layer base {
+  body {
+    font-family: var(--font-open-sans), sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-raleway);
+  }
+}
 
 :root {
   --background: hsl(0 0% 100%);
+  --bg-secondary: #ccf3cf;
   --foreground: hsl(0 0% 3.9%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(0 0% 3.9%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(0 0% 3.9%);
-  --primary: hsl(0 0% 9%);
+  --primary: #1f1f1f;
   --primary-foreground: hsl(0 0% 98%);
-  --secondary: hsl(0 0% 96.1%);
+  --secondary: #525252;
   --secondary-foreground: hsl(0 0% 9%);
+  --btn-primary: #274099;
+  --btn-secondary: #26932d;
   --muted: hsl(0 0% 96.1%);
   --muted-foreground: hsl(0 0% 45.1%);
   --accent: hsl(0 0% 96.1%);
@@ -56,6 +73,9 @@
   --primary-foreground: hsl(0 0% 9%);
   --secondary: hsl(0 0% 14.9%);
   --secondary-foreground: hsl(0 0% 98%);
+  --btn-primary: #274099;
+
+  --btn-secondary: hsl(121, 39%, 44%);
   --muted: hsl(0 0% 14.9%);
   --muted-foreground: hsl(0 0% 63.9%);
   --accent: hsl(0 0% 14.9%);

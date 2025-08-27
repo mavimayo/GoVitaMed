@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import type { VariantProps } from 'class-variance-authority';
 import { cva } from 'class-variance-authority';
 
@@ -12,13 +13,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground shadow-sm hover:bg-primary/90',
+          'bg-[var(--btn-primary)] text-primary-foreground px-6 py-3 rounded-md text-sm font-normal shadow-xs transition-colors duration-200 hover:bg-[#0d5f96]',
+        primary:
+          'bg-[var(--btn-secondary)] text-primary-foreground px-6 py-3 rounded-md text-sm font-normal shadow-xs transition-colors duration-200 hover:bg-[#0d5f96]',
         destructive:
           'bg-destructive text-destructive-foreground shadow-xs hover:bg-destructive/90',
         outline:
           'border border-input bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
         secondary:
-          'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
+          'w-fit bg-[#F5F5F5] text-black border-2 border-gray-400 hover:bg-[#F5F5F5]',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
       },
@@ -42,8 +45,8 @@ function Button({
   size,
   asChild = false,
   ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
+}: React.ComponentProps<'button'>
+  & VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   }) {
   const Comp = asChild ? SlotPrimitive.Slot : 'button';
