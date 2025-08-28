@@ -9,13 +9,13 @@ const typographyVariants = cva('', {
   variants: {
     // Tag-specific base styles
     variant: {
-      h1: 'text-[24px] sm:text-[36px] md:text-[30px] lg:text-[48px]',
+      h1: 'text-[24px] sm:text-[36px] md:text-[30px] lg:text-[48px] leading-tight',
       h2: 'text-3xl font-semibold leading-snug',
-      h3: 'font-semibold text-[20px] sm:text-[22px] lg:text-[22px]',
+      h3: 'font-bold text-[18px] sm:text-[20px] lg:text-[24px]',
       h4: 'text-[18px] sm:text-[20px] md:text-[22px] font-bold',
       h5: 'text-lg font-normal leading-relaxed',
       h6: 'text-base font-normal leading-relaxed',
-      p: 'text-[14px] sm:text-[15px] md:text-[12px] lg:text-[18px]  font-semibold',
+      p: 'text-[14px] sm:text-[15px] md:text-[16px] lg:text-[18px]  font-semibold',
       span: 'text-[24px] sm:text-[40px] md:text-[30px] lg:text-[48px]',
       spanParagraph: 'font-bold text-[20px] sm:text-[20px] lg:text-[32px]',
     },
@@ -38,7 +38,7 @@ const typographyVariants = cva('', {
       sm: 'text-[15px] sm:text-[13px] md:text-[16px] lg:text-[16px]',
       md: 'text-[18px]',
       lg: 'text-[24px]',
-      xl: 'text-[32px]',
+      xl: 'text-[16px] sm:text-[20px] md:text-[28px] lg:text-[32px]',
     },
   },
   defaultVariants: {

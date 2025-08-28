@@ -3,7 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Typography } from './ui/typography';
+import { Typography } from '@/components/ui/typography';
 
 const specialists = [
   {
@@ -32,8 +32,8 @@ export default function Specialists() {
   return (
     <section className="py-16 px-4 sm:px-6 lg:px-16">
       {/* Heading */}
-      <div className="text-center max-w-5xl mx-auto mb-12">
-        <Typography variant="h1" as="h1">
+      <div className="lg:text-center max-w-5xl mx-auto mb-12">
+        <Typography variant="h1" as="h1" className="text-center">
           Our
           {' '}
           <Typography as="span" color="custom1" weight="bold">
@@ -41,7 +41,7 @@ export default function Specialists() {
           </Typography>
         </Typography>
 
-        <Typography variant="p" color="secondary" size="sm">
+        <Typography variant="p" color="secondary" size="sm" weight="normal">
           Lorem ipsum dolor sit amet consectetur adipiscing elit ut et massa mi.
           Aliquam in hendrerit urna. Pellentesque sit amet sapien fringilla,
           mattis ligula consectetur, ultrices mauris. Maecenas vitae mattis tellus.
@@ -73,8 +73,8 @@ export default function Specialists() {
       </div>
 
       {/* View All Button */}
-      <div className="flex justify-center">
-        <Button>
+      <div className="flex justify-center ">
+        <Button className="w-40">
           View All
           <ArrowUpRight size={14} />
         </Button>

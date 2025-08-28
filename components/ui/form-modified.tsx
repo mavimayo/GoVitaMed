@@ -98,12 +98,11 @@ export function FormFieldWrapper<T extends FieldValues>({
 
 type FormComponents<T extends FieldValues> = {
   Input: (
-    props: WrappedFieldProps<T> &
-      Omit<React.ComponentProps<'input'>, 'name' | 'onChange' | 'onBlur'>
+    props: WrappedFieldProps<T> & Omit<React.ComponentProps<'input'>, 'name' | 'onChange' | 'onBlur'>
   ) => ReactNode;
   Textarea: (
-    props: WrappedFieldProps<T> &
-      Omit<React.ComponentProps<'textarea'>, 'name' | 'onChange' | 'onBlur'>
+    props: WrappedFieldProps<T>
+      & Omit<React.ComponentProps<'textarea'>, 'name' | 'onChange' | 'onBlur'>
   ) => ReactNode;
   Field: React.ComponentType<Omit<FormFieldProps<T>, 'control'>>;
 };

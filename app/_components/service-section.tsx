@@ -1,7 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Typography } from './ui/typography';
+import { Typography } from '@/components/ui/typography';
 
 const services = [
   'Support Group Therapy',
@@ -20,7 +20,7 @@ const services = [
 
 export default function ServicesSection() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-16 text-center">
+    <section className="py-20 px-4 sm:px-6 lg:px-16 lg:text-center">
       <Typography variant="h1" weight="normal" color="secondary" as="h1">
         Services
         {' '}
@@ -63,7 +63,7 @@ export default function ServicesSection() {
       </div>
 
       {/* Button */}
-      <div className="mt-10">
+      <div className="mt-10 md:align-center flex justify-center">
         <Button>
           View All Services
           <ArrowUpRight className="ml-2 w-4 h-4" />

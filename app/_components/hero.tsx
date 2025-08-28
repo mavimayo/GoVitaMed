@@ -3,7 +3,7 @@
 import { Search } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Typography } from './ui/typography';
+import { Typography } from '@/components/ui/typography';
 
 export default function Hero() {
   return (

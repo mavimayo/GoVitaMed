@@ -1,8 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 'use client';
 
 import { ArrowLeft, ArrowRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Typography } from '../../components/ui/typography';
 
 export default function Testimonials() {
   const reviews = [
@@ -21,23 +23,27 @@ export default function Testimonials() {
   ];
 
   return (
-    <section className="py-16 px-6 lg:px-16">
+    <section className="py-16 px-6 lg:px-16 flex flex-col">
       {/* Heading */}
       <div className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
         <div className="max-w-full md:max-w-2xl text-center md:text-left">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-light text-gray-900">
+          <Typography variant="h1" as="h1" weight="normal">
             Listen to
             {' '}
-            <span className="font-bold text-[var(--btn-primary)]">
-              what they say
-            </span>
+            <Typography as="span" weight="bold" color="custom1">
+              what
+              {' '}
+              <br />
+              {' '}
+              they say
+            </Typography>
             {' '}
             about us
-          </h2>
+          </Typography>
         </div>
 
-        {/* Navigation Arrows */}
-        <div className="flex gap-3">
+        {/* Arrows - desktop only */}
+        <div className="hidden md:flex gap-6">
           <Button
             variant="outline"
             size="icon"
@@ -67,24 +73,43 @@ export default function Testimonials() {
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded bg-gray-200 flex-shrink-0" />
                 <div>
-                  <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+                  <Typography variant="h3" as="h3" weight="semibold" size="sm">
                     {review.name}
-                  </h3>
-                  <div className="flex text-green-600 mt-1">
+                  </Typography>
+
+                  <div className="flex text-[var(--btn-secondary)] mt-1">
                     {[...Array.from({ length: 5 })].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-green-600" />
+                      <Star key={i} className="h-4 w-4 fill-[var(--btn-secondary)]" />
                     ))}
                   </div>
                 </div>
               </div>
 
               {/* Review Text */}
-              <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+              <Typography variant="p" size="sm" color="secondary" weight="normal">
                 {review.text}
-              </p>
+              </Typography>
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Arrows - mobile only */}
+      <div className="flex md:hidden justify-center gap-12 mt-8">
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full h-10 w-10 border-gray-300"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          className="rounded-full h-10 w-10 border-gray-300"
+        >
+          <ArrowRight className="h-5 w-5" />
+        </Button>
       </div>
     </section>
   );

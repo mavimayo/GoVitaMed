@@ -2,14 +2,14 @@
 
 import { ArrowUpRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Typography } from './ui/typography';
+import { Typography } from '@/components/ui/typography';
 
 export default function AboutSection() {
   return (
-    <section className="text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <section className="lg:text-center max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Heading */}
 
-      <Typography variant="h1" as="h1" className="leading-tight">
+      <Typography variant="h1" as="h1" className="leading-tight text-center">
         <Typography as="span" color="custom1" weight="bold">
           About
         </Typography>

@@ -2,21 +2,23 @@
 import { ArrowUpRight, Facebook, Instagram, Linkedin, Youtube } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from './ui/button';
+import { Typography } from './ui/typography';
 
 export default function Footer() {
   return (
     <footer className="">
       {/* Main Footer */}
-      <div className=" px-6 py-2 grid grid-cols-1 md:grid-cols-4 gap-8 text-sm text-gray-700 mb-12 mx-12">
+      <div className="px-4 sm:px-6 md:px-8 lg:px-12 py-8 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-4 gap-8 text-sm text-gray-700 mb-12">
 
         {/* Logo + Contact */}
         <div>
-          <div className="flex items-center gap-2">
-            <img src="/images/GoVitaMed-logo.png" alt="GoVitaMed" className="w-40 h-15" />
+          <div className="flex items-center gap-2 s">
+            <img src="/images/GoVitaMed-logo.png" alt="GoVitaMed" className="w-32 sm:w-40 h-auto" />
           </div>
-
-          <p className="mt-4">enquiries@govitamed.com</p>
-          <p className="mt-1">Call Us at: +123456789</p>
+          <Typography variant="p" size="sm" color="secondary" weight="normal" className="py-2">enquiries@govitamed.com </Typography>
+          <Typography variant="p" size="sm" color="secondary" weight="normal">Call Us at: +123456789 </Typography>
+          {/* <p className="mt-4 break-words">enquiries@govitamed.com</p> */}
+          {/* <p className="mt-1">Call Us at: +123456789</p> */}
 
           <div className="flex gap-4 mt-4 text-black">
             <Link href="#"><Facebook size={18} /></Link>
@@ -28,49 +30,56 @@ export default function Footer() {
 
         {/* Quick Links */}
         <div>
-          <h3 className="font-bold mb-4">Quick Links</h3>
-          <ul className="space-y-2">
-            <li><Link href="#" className="hover:text-blue-700">About</Link></li>
-            <li><Link href="#" className="hover:text-blue-700">Services</Link></li>
-            <li><Link href="#" className="hover:text-blue-700">File a Complaint</Link></li>
-            <li><Link href="#" className="hover:text-blue-700">Therapist</Link></li>
+          <Typography variant="p" size="sm" weight="bold">
+            Quick Links
+          </Typography>
+          {/* <h3 className="font-bold mb-4">Quick Links</h3> */}
+          <ul className="space-y-3 pt-2 ">
+            <li><Link href="#">About</Link></li>
+            <li><Link href="#">Services</Link></li>
+            <li><Link href="#">File a Complaint</Link></li>
+            <li><Link href="#">Therapist</Link></li>
           </ul>
         </div>
 
         {/* Our Policies */}
         <div>
-          <h3 className="font-bold mb-4">Our Policies</h3>
-          <ul className="space-y-2">
-            <li><Link href="#" className="hover:text-blue-700">Terms of Services</Link></li>
-            <li><Link href="#" className="hover:text-blue-700">Privacy Policy</Link></li>
-            <li><Link href="#" className="hover:text-blue-700">Refund Policy</Link></li>
+          <Typography variant="p" size="sm" weight="bold">
+            Our Policies
+          </Typography>
+          {/* <h3 className="font-bold mb-4">Our Policies</h3> */}
+          <ul className="space-y-3 pt-2">
+            <li><Link href="#">Terms of Services</Link></li>
+            <li><Link href="#">Privacy Policy</Link></li>
+            <li><Link href="#">Refund Policy</Link></li>
           </ul>
         </div>
 
         {/* Mailing List */}
         <div>
-          {/* <Typography variant="h3">Join Our Mailing List.</Typography> */}
-          <h3 className="font-bold mb-4">Join Our Mailing List.</h3>
-          <form className="flex flex-col gap-3">
+          <Typography variant="p" size="sm" weight="bold">
+            Join Our Mailing List.
+          </Typography>
+
+          <form className="flex flex-col sm:flex-row sm:items-center gap-3">
             <input
               type="email"
               placeholder="Email address"
-              className="border-b border-gray-400 focus:outline-none focus:border-blue-700 p-1 text-sm"
+              className="flex-1 border-b p-1 text-sm"
             />
-            <Button
-              className=" rounded-md w-fit flex items-center"
-            >
-              Subscribe
-              <ArrowUpRight className="ml-1 h-6 w-6s" />
-            </Button>
           </form>
+          <Button className="rounded-md w-fit flex items-center mt-6">
+            Subscribe
+            <ArrowUpRight className="ml-1 h-5 w-5" />
+          </Button>
         </div>
       </div>
 
       {/* Bottom Bar */}
-      <div className="bg-[var(--btn-primary)] text-white text-center py-3 text-xs">
+      <div className="w-full bg-[var(--btn-primary)] text-white py-3 px-2 text-[10px] sm:text-xs leading-snug text-center">
         Copyrights © 2025 Tritmint, All Rights Reserved
       </div>
+
     </footer>
   );
 }

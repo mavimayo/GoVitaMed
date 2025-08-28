@@ -9,24 +9,31 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
+import { Typography } from '../../components/ui/typography';
 
 export default function FAQSection() {
   return (
     <>
-      <section className="bg-[#99E8A080] rounded-2xl py-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 mx-4 sm:mx-6 md:mx-12 lg:mx-16">
+      <section className="bg-[#99E8A080] rounded-2xl pt-16 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 mx-4 sm:mx-6 md:mx-12 lg:mx-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left Side */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <h2 className="text-[32px] sm:text-[40px] md:text-[48px] font-normal leading-snug">
+          <div className="flex flex-col items-center md:items-start text-center md:text-left ">
+            <Typography variant="h1" as="h1" color="secondary">
               Most Common
               {' '}
-              <span className="text-[var(--btn-primary)] font-bold">Questions</span>
+              <Typography as="span" color="custom1" weight="bold">
+                Questions
+              </Typography>
               {' '}
               Asked by People.
-            </h2>
-            <p className="mt-4 text-gray-600 text-base sm:text-lg">
+            </Typography>
+
+            <Typography
+              variant="p"
+              color="secondary"
+            >
               Find the answers to frequently asked questions here.
-            </p>
+            </Typography>
 
             <div className="mt-6 flex items-center gap-3 justify-center md:justify-start">
               <HelpCircle size={20} />
@@ -43,19 +50,19 @@ export default function FAQSection() {
               </Button>
             </div>
 
-            <div className="mt-10 flex justify-center md:justify-start">
+            <div className="mt-auto flex justify-center md:justify-start lg:relative top-11 left-12">
               <Image
                 src="/images/FAQ.png"
                 alt="GoVitaMed Capsule"
                 width={250}
                 height={250}
-                className="sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain"
+                className="sm:w-64 sm:h-64 md:w-80 md:h-80 lg:w-[500px] lg:h-[500px] object-contain"
               />
             </div>
           </div>
 
           {/* Right Side (Accordion) */}
-          <div className="space-y-4 w-full">
+          <div className="space-y-4 w-full mb-6">
             <Accordion type="single" collapsible className="w-full space-y-4">
               <AccordionItem
                 value="item-1"

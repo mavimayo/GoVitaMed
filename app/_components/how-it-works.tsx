@@ -1,21 +1,21 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Typography } from './ui/typography';
+import { Typography } from '@/components/ui/typography';
 
 export default function HowItWorks() {
   return (
-    <section className="py-16 px-6 lg:px-16">
+    <section className="py-16 px-6 lg:px-16 lg:mt-20">
       {/* Heading */}
       <div className="lg:text-center max-w-6xl mx-auto mb-12">
-        <Typography variant="h2" as="h2" className="font-normal text-[40px]">
+        <Typography variant="h1" as="h1" weight="normal">
           Find How Do
           {' '}
-          <Typography as="span" color="custom1" className="font-bold">
+          <Typography as="span" color="custom1" weight="bold">
             GoVita
           </Typography>
           {' '}
-          <Typography as="span" color="custom2" className="font-bold">
+          <Typography as="span" color="custom2" weight="bold">
             Med
           </Typography>
           {' '}
@@ -32,14 +32,13 @@ export default function HowItWorks() {
 
       {/* Cards + Image */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
-        {/* Image first on small/medium, right on large */}
         <div className="flex justify-center items-center order-1 lg:order-4 col-span-1 sm:col-span-2 lg:col-span-1">
           <Image
             src="/images/work.png"
             alt="Doctor consultation"
             width={700}
             height={700}
-            className="rounded-2xl shadow-md object-cover h-full w-full"
+            className="rounded-2xl shadow-md object-cover h-full w-full md:max-w-[400px]"
           />
         </div>
 
@@ -55,7 +54,7 @@ export default function HowItWorks() {
                 color="secondary"
                 size="sm"
                 weight="normal"
-                className="pt-10"
+                className="pt-6"
               >
                 Easy and FREE Registration: Begin by signing up with just a few
                 clicks. Create your account and set up your profile with basic
@@ -82,7 +81,7 @@ export default function HowItWorks() {
                 color="secondary"
                 size="sm"
                 weight="normal"
-                className="pt-10"
+                className="pt-6"
               >
                 Choose how you want to connect with the provider—through platform
                 messaging, or a scheduled video or phone call. Opt for local or
@@ -109,7 +108,7 @@ export default function HowItWorks() {
                 color="secondary"
                 size="sm"
                 weight="normal"
-                className="pt-10"
+                className="pt-6"
               >
                 Choose how you want to connect with the provider—through platform
                 messaging, or a scheduled video or phone call. Opt for local or
