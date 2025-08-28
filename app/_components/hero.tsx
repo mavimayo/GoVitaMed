@@ -8,7 +8,7 @@ import { Typography } from '@/components/ui/typography';
 export default function Hero() {
   return (
     <section className="relative">
-      <div className="mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 pt-36 sm:py-12 lg:pt-32  grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 items-center gap-8 lg:gap-12">
+      <div className="mx-auto px-4 sm:px-6 lg:px-12 xl:px-20 pt-36 sm:py-12 lg:pt-32  grid grid-cols-1 lg:grid-cols-2 md:grid-cols-2 items-center gap-8 lg:gap-12 pb-6">
 
         {/* Right Image */}
         <div className="relative flex justify-center order-1 lg:order-2 md:order-2 md:pt-28">

@@ -49,10 +49,14 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link href="#" className="text-sm font-medium text-gray-700 hover:text-green-700">
-                Service
+              <Link
+                href="/services"
+                className="text-sm font-medium text-gray-700 hover:text-green-700"
+              >
+                Services
               </Link>
             </li>
+
             <li>
               <Link href="#" className="text-sm font-medium text-gray-700 hover:text-green-700">
                 Doctors
@@ -94,7 +98,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed top-[56px] left-0 w-full flex flex-col gap-4 px-6 pb-4 pt-2 z-40 bg-white shadow-md">
+        <div className="fixed top-[56px] left-0 w-full flex flex-col gap-4 px-6 pb-4 pt-6 z-40 bg-white shadow-md ">
           <ul className="flex flex-col gap-3">
             <li>
               <Link href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-green-700">
@@ -102,9 +106,14 @@ const Navbar = () => {
               </Link>
             </li>
             <li>
-              <Link href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-green-700">
+              <Link
+                href="/services"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="text-sm font-medium text-gray-700 hover:text-green-700"
+              >
                 Services
               </Link>
+
             </li>
             <li>
               <Link href="#" onClick={() => setIsMobileMenuOpen(false)} className="text-sm font-medium text-gray-700 hover:text-green-700">

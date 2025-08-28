@@ -53,7 +53,7 @@ export default function Specialists() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {specialists.map((doc, index) => (
           <Card key={index} className="rounded-2xl shadow-md overflow-hidden border border-gray-100">
-            <div className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[350px]">
+            <div className="relative w-full h-80 sm:h-80 md:h-96 lg:h-[350px]">
               <Image
                 src={doc.image}
                 alt={doc.name}
